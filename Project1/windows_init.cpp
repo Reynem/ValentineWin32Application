@@ -2,12 +2,82 @@
 #include "Project1.h"
 #include "utils_windows.h"
 
-struct WindowRect {
-    int x;
-    int y;
+struct AnimationState {
+    HWND hWnd;
+    double currentX;
+    double currentY;
+    double stepX;
+    double stepY;
     int width;
     int height;
+    int targetX;
+    int targetY;
 };
+
+void MoveAllWindowsParallel(HWND* hWnds, WindowRect* targets, int count, int steps = 50, int delayMs = 10)
+{
+    if (count <= 0) return;
+
+    // 1. Подготовка: вычисляем шаги для каждого окна
+    AnimationState* states = new AnimationState[count];
+
+    for (int i = 0; i < count; i++) {
+        states[i].hWnd = hWnds[i];
+
+        RECT rect;
+        GetWindowRect(hWnds[i], &rect);
+
+        states[i].width = rect.right - rect.left;
+        states[i].height = rect.bottom - rect.top;
+        states[i].currentX = (double)rect.left;
+        states[i].currentY = (double)rect.top;
+        states[i].targetX = targets[i].x;
+        states[i].targetY = targets[i].y;
+
+        // Вычисляем приращение (шаг) за одну итерацию
+        states[i].stepX = (targets[i].x - rect.left) / (double)steps;
+        states[i].stepY = (targets[i].y - rect.top) / (double)steps;
+    }
+
+    // 2. Главный цикл анимации
+    for (int s = 0; s < steps; s++)
+    {
+        // Сдвигаем ВСЕ окна на один маленький шаг
+        for (int i = 0; i < count; i++)
+        {
+            states[i].currentX += states[i].stepX;
+            states[i].currentY += states[i].stepY;
+
+            MoveWindow(
+                states[i].hWnd,
+                (int)states[i].currentX,
+                (int)states[i].currentY,
+                states[i].width,
+                states[i].height,
+                TRUE
+            );
+        }
+
+        // Ждем один раз для всех окон
+        Sleep(delayMs);
+    }
+
+    // 3. Финальная коррекция (чтобы точно попасть в координаты)
+    for (int i = 0; i < count; i++)
+    {
+        MoveWindow(
+            states[i].hWnd,
+            states[i].targetX,
+            states[i].targetY,
+            states[i].width,
+            states[i].height,
+            TRUE
+        );
+    }
+
+    delete[] states;
+}
+
 
 enum {
 	NUM_ROWS = 3,
@@ -91,6 +161,16 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         ShowWindow(hWnd[i], nCmdShow);
         UpdateWindow(hWnd[i]);
     }
+
+    WindowRect newPositions[numWindows];
+    for (int i = 0; i < 6; i++) {
+        RECT rc;
+        GetWindowRect(hWnd[i], &rc);
+        newPositions[i].x = rc.left + 100;
+        newPositions[i].y = rc.top + 50;
+    }
+
+    MoveAllWindowsParallel(hWnd, newPositions, 6, 50, 10);
 
     return TRUE;
 }
