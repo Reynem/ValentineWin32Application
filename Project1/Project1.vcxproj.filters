@@ -30,12 +30,18 @@
     <ClInclude Include="windows_init.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="utils_windows.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Project1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="windows_init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils_windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

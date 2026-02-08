@@ -131,10 +131,12 @@
     <ClInclude Include="Project1.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="utils_windows.h" />
     <ClInclude Include="windows_init.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Project1.cpp" />
+    <ClCompile Include="utils_windows.cpp" />
     <ClCompile Include="windows_init.cpp" />
   </ItemGroup>
   <ItemGroup>

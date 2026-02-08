@@ -1,5 +1,6 @@
 #include "windows_init.h"
 #include "Project1.h"
+#include "utils_windows.h"
 
 struct WindowRect {
     int x;
@@ -64,6 +65,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         ShowWindow(hWnd[i], nCmdShow);
         UpdateWindow(hWnd[i]);
     }
+
+	MoveWindowSmooth(hWnd[0], 100, 0);
 
     return TRUE;
 }
