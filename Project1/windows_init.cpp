@@ -29,6 +29,8 @@ COLORREF heartColors[NUM_ROWS * NUM_COLS]{
     YELLOW_C
 };
 
+COLORREF transparentColor = RGB(255, 255, 255);
+
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
@@ -70,8 +72,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
     for (int i = 0; i < numWindows; i++)
     {
-        hWnd[i] = CreateWindowW(
-            szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+        hWnd[i] = CreateWindowExW(
+            WS_EX_LAYERED,
+            szWindowClass, szTitle, WS_POPUP,
             pack_of_values[i].x,
             pack_of_values[i].y,
             pack_of_values[i].width,
@@ -82,6 +85,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         if (!hWnd[i])
             return FALSE;
 
+		SetLayeredWindowAttributes(hWnd[i], transparentColor, 0, LWA_COLORKEY);
 		SetPropW(hWnd[i], L"HeartColor", (HANDLE)heartColors[i]);
 
         ShowWindow(hWnd[i], nCmdShow);
