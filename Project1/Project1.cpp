@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "Project1.h"
+#include "windows_init.h"
 
 #define MAX_LOADSTRING 100
 
@@ -93,53 +94,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        In this function, we save the instance handle in a global variable and
 //        create and display the main program window.
 //
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-   hInst = hInstance; // Store instance handle in our global variable
-
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-   if (!hWnd)
-   {
-      return FALSE;
-   }
-
-   HWND hWnd1 = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-   if (!hWnd)
-   {
-       return FALSE;
-   }
-
-   HWND hWnd2 = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-   if (!hWnd)
-   {
-       return FALSE;
-   }
-
-   HWND hWnd3 = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-   if (!hWnd)
-   {
-       return FALSE;
-   }
-
-   ShowWindow(hWnd, nCmdShow);
-   ShowWindow(hWnd1, nCmdShow);
-   ShowWindow(hWnd2, nCmdShow);
-   ShowWindow(hWnd3, nCmdShow);
-   UpdateWindow(hWnd);
-   UpdateWindow(hWnd1);
-   UpdateWindow(hWnd2);
-   UpdateWindow(hWnd3);
-
-   return TRUE;
-}
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
