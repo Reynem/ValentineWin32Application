@@ -73,7 +73,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     for (int i = 0; i < numWindows; i++)
     {
         hWnd[i] = CreateWindowExW(
-            WS_EX_LAYERED | WS_EX_TOPMOST,
+            WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_NOACTIVATE,
             szWindowClass, szTitle, WS_POPUP,
             pack_of_values[i].x,
             pack_of_values[i].y,
