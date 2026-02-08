@@ -9,6 +9,26 @@ struct WindowRect {
     int height;
 };
 
+enum {
+	NUM_ROWS = 3,
+	NUM_COLS = 2,
+	PINK_C = RGB(255, 192, 203),
+	RED_C = RGB(255, 0, 0),
+	CYAN_C = RGB(0, 255, 255),
+	LIME_C = RGB(191, 255, 0),
+	BLUE_C = RGB(15, 15, 255),
+	YELLOW_C = RGB(255, 255, 0)
+};
+
+COLORREF heartColors[NUM_ROWS * NUM_COLS]{
+    PINK_C,
+    RED_C,
+    CYAN_C,
+    LIME_C,
+    BLUE_C,
+    YELLOW_C
+};
+
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
@@ -62,11 +82,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         if (!hWnd[i])
             return FALSE;
 
+		SetPropW(hWnd[i], L"HeartColor", (HANDLE)heartColors[i]);
+
         ShowWindow(hWnd[i], nCmdShow);
         UpdateWindow(hWnd[i]);
     }
-
-	MoveWindowSmooth(hWnd[0], 100, 0);
 
     return TRUE;
 }

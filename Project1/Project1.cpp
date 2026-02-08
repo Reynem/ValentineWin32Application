@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "Project1.h"
 #include "windows_init.h"
+#include "utils_windows.h"
 
 #define MAX_LOADSTRING 100
 
@@ -130,7 +131,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
+            
+			COLORREF color = (COLORREF)GetPropW(hWnd, L"HeartColor");
+
+			if (color == NULL) color = RGB(255, 0, 0);
+
+			DrawHeart(hWnd, hdc, color);
+
             EndPaint(hWnd, &ps);
         }
         break;
