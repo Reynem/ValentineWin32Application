@@ -12,16 +12,42 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
 
-    WindowRect pack_of_values[] = {
-        {100, 100, 300, 200},
-        {420, 100, 300, 200},
-        {100, 320, 300, 200},
-        {420, 320, 300, 200}
-    };
+    const int rows = 3;
+    const int cols = 2;
+    const int numWindows = rows * cols;
 
-    HWND hWnd[4];
+    WindowRect pack_of_values[numWindows];
 
-    for (int i = 0; i < 4; i++)
+    int winWidth = 300;
+    int winHeight = 200;
+    int spacingX = 20;
+    int spacingY = 20;
+
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+    int totalWidth = cols * winWidth + (cols - 1) * spacingX;
+    int totalHeight = rows * winHeight + (rows - 1) * spacingY;
+
+    int startX = (screenWidth - totalWidth) / 2;
+    int startY = (screenHeight - totalHeight) / 2;
+
+	// Calculate positions and sizes for each window
+    for (int r = 0; r < rows; r++)
+    {
+        for (int c = 0; c < cols; c++)
+        {
+            int idx = r * cols + c;
+            pack_of_values[idx].x = startX + c * (winWidth + spacingX);
+            pack_of_values[idx].y = startY + r * (winHeight + spacingY);
+            pack_of_values[idx].width = winWidth;
+            pack_of_values[idx].height = winHeight;
+        }
+    }
+
+    HWND hWnd[numWindows];
+
+    for (int i = 0; i < numWindows; i++)
     {
         hWnd[i] = CreateWindowW(
             szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,

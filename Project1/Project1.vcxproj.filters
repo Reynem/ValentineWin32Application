@@ -48,5 +48,11 @@
     <Image Include="..\..\..\Downloads\Project1.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Project1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
