@@ -15,6 +15,7 @@ struct AnimationState {
     int targetY;
 };
 
+// Method was changed to make movement cubic and not linear
 void MoveAllWindowsParallel(HWND* hWnds, WindowRect* targets, int count, int steps = 50, int delayMs = 10)
 {
     if (count <= 0) return;
@@ -36,23 +37,28 @@ void MoveAllWindowsParallel(HWND* hWnds, WindowRect* targets, int count, int ste
         states[i].targetY = targets[i].y;
 
         // Вычисляем приращение (шаг) за одну итерацию
-        states[i].stepX = (targets[i].x - rect.left) / (double)steps;
-        states[i].stepY = (targets[i].y - rect.top) / (double)steps;
+        states[i].stepX = targets[i].x - rect.left;
+        states[i].stepY = targets[i].y - rect.top;
     }
 
     // 2. Главный цикл анимации
     for (int s = 0; s < steps; s++)
     {
+        double t = (double)s / (steps - 1);
+
+        // Cubic ease-out
+        double k = 1.0 - pow(1.0 - t, 3.0);
+
         // Сдвигаем ВСЕ окна на один маленький шаг
         for (int i = 0; i < count; i++)
         {
-            states[i].currentX += states[i].stepX;
-            states[i].currentY += states[i].stepY;
+            double x = states[i].currentX + states[i].stepX * k;
+            double y = states[i].currentY + states[i].stepY * k;
 
             MoveWindow(
                 states[i].hWnd,
-                (int)states[i].currentX,
-                (int)states[i].currentY,
+                (int)x,
+                (int)y,
                 states[i].width,
                 states[i].height,
                 TRUE
@@ -78,6 +84,7 @@ void MoveAllWindowsParallel(HWND* hWnds, WindowRect* targets, int count, int ste
 
     delete[] states;
 }
+
 
 void SpiralToCenter(
     HWND* hWnds,
@@ -274,7 +281,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         }
     }
 
-    MoveAllWindowsParallel(hWnd, newPositions, numWindows, 30, 5);
+    MoveAllWindowsParallel(hWnd, newPositions, numWindows, 30, 15);
 
     int centerX = screenWidth / 2;
     int centerY = screenHeight / 2;
