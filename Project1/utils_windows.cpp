@@ -83,3 +83,89 @@ void DrawHeart(HWND hWnd, HDC hdc, COLORREF color)
     DeleteObject(brush);
     DeleteObject(hPen);
 }
+
+void DrawLoveLetter(HWND hWnd, HDC hdc) {
+    if (!hWnd) return;
+
+    // Get window dimensions
+    RECT rect;
+    GetClientRect(hWnd, &rect);
+    int width = rect.right - rect.left;
+    int height = rect.bottom - rect.top;
+
+    int cx = width / 2;
+    int cy = height / 2;
+
+    // Calculate envelope dimensions
+    int envW = width - 40;
+    int envH = height - 60;
+
+    int left = cx - envW / 2;
+    int top = cy - envH / 2;
+    int right = cx + envW / 2;
+    int bottom = cy + envH / 2;
+
+    // Setup colors (off-white to prevent transparency)
+    COLORREF paperColor = RGB(250, 245, 255);
+    COLORREF lineColor = RGB(220, 20, 60);
+    COLORREF heartColor = RGB(255, 0, 50);
+
+    // Draw envelope body
+    HBRUSH hPaperBrush = CreateSolidBrush(paperColor);
+    HPEN hBorderPen = CreatePen(PS_SOLID, 3, lineColor);
+
+    HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, hPaperBrush);
+    HPEN oldPen = (HPEN)SelectObject(hdc, hBorderPen);
+
+    Rectangle(hdc, left, top, right, bottom);
+
+    // Draw fold lines
+    MoveToEx(hdc, left, top, NULL);
+    LineTo(hdc, cx, cy);
+    LineTo(hdc, right, top);
+
+    MoveToEx(hdc, left, bottom, NULL);
+    LineTo(hdc, cx, cy + (envH / 4));
+
+    MoveToEx(hdc, right, bottom, NULL);
+    LineTo(hdc, cx, cy + (envH / 4));
+
+    // Prepare for heart seal drawing
+    SelectObject(hdc, oldPen);
+    SelectObject(hdc, oldBrush);
+    DeleteObject(hBorderPen);
+    DeleteObject(hPaperBrush);
+
+    HBRUSH hHeartBrush = CreateSolidBrush(heartColor);
+    HPEN hHeartPen = CreatePen(PS_SOLID, 1, heartColor);
+
+    SelectObject(hdc, hHeartBrush);
+    SelectObject(hdc, hHeartPen);
+
+    // Calculate heart seal coordinates
+    double size = (double)min(envW, envH) / 6.0;
+    int hCx = cx;
+    int hCy = cy;
+
+    // Define Bezier points for heart
+    POINT pts[7];
+    pts[0].x = hCx;                     pts[0].y = hCy - (int)(size * 0.5);
+    pts[1].x = hCx + (int)(size * 1.2); pts[1].y = hCy - (int)(size * 1.5);
+    pts[2].x = hCx + (int)(size * 2.2); pts[2].y = hCy + (int)(size * 0.5);
+    pts[3].x = hCx;                     pts[3].y = hCy + (int)(size * 1.5);
+    pts[4].x = hCx - (int)(size * 2.2); pts[4].y = hCy + (int)(size * 0.5);
+    pts[5].x = hCx - (int)(size * 1.2); pts[5].y = hCy - (int)(size * 1.5);
+    pts[6].x = hCx;                     pts[6].y = hCy - (int)(size * 0.5);
+
+    // Draw heart seal
+    BeginPath(hdc);
+    PolyBezier(hdc, pts, 7);
+    EndPath(hdc);
+    FillPath(hdc);
+
+    // Cleanup
+    SelectObject(hdc, oldPen);
+    SelectObject(hdc, oldBrush);
+    DeleteObject(hHeartBrush);
+    DeleteObject(hHeartPen);
+}
