@@ -309,5 +309,21 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	UpdateWindow(hWnd[numWindows - 1]);
 
+
+    // Opening letter
+
+    Sleep(2000);
+
+    SetPropW(hWnd[numWindows - 1], L"WindowType", (HANDLE)2);
+
+    InvalidateRect(hWnd[numWindows - 1], NULL, TRUE); // Force redraw to show the love letter
+
+    UpdateWindow(hWnd[numWindows - 1]);
+
+    RECT rect;
+    GetWindowRect(hWnd[numWindows - 1], &rect);
+
+    MoveWindowSmooth(hWnd[numWindows - 1], rect.left, rect.top + 50);
+
     return TRUE;
 }

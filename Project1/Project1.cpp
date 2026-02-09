@@ -138,7 +138,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			if (color == NULL) color = RGB(255, 0, 0);
 
-			if (type == 1) DrawLoveLetter(hWnd, hdc);
+            if (type == 1) DrawLoveLetter(hWnd, hdc);
+            else if (type == 2) DrawOpenEnvelope(hWnd, hdc);
+            else if (type == 3) DrawLetter(hWnd, hdc);
 			else if (type == 0) DrawHeart(hWnd, hdc, color);
 
             EndPaint(hWnd, &ps);

@@ -169,3 +169,185 @@ void DrawLoveLetter(HWND hWnd, HDC hdc) {
     DeleteObject(hHeartBrush);
     DeleteObject(hHeartPen);
 }
+
+void DrawOpenEnvelope(HWND hWnd, HDC hdc) {
+    if (!hWnd) return;
+
+    // Get window dimensions
+    RECT rect;
+    GetClientRect(hWnd, &rect);
+    int width = rect.right - rect.left;
+    int height = rect.bottom - rect.top;
+    int cx = width / 2;
+    int cy = height / 2;
+
+    // Calculate envelope dimensions
+    int envW = width - 40;
+    int envH = height - 60;
+    int left = cx - envW / 2;
+    int top = cy - envH / 2;
+    int right = cx + envW / 2;
+    int bottom = cy + envH / 2;
+
+    // Colors
+    COLORREF envelopeColor = RGB(250, 245, 255);
+    COLORREF lineColor = RGB(220, 20, 60);
+    COLORREF heartColor = RGB(255, 0, 50);
+
+    // Draw envelope body (lower part)
+    HBRUSH hEnvBrush = CreateSolidBrush(envelopeColor);
+    HPEN hBorderPen = CreatePen(PS_SOLID, 3, lineColor);
+    HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, hEnvBrush);
+    HPEN oldPen = (HPEN)SelectObject(hdc, hBorderPen);
+
+    Rectangle(hdc, left, top, right, bottom);
+
+    // Draw fold lines on body
+    MoveToEx(hdc, left, bottom, NULL);
+    LineTo(hdc, cx, cy + (envH / 4));
+    MoveToEx(hdc, right, bottom, NULL);
+    LineTo(hdc, cx, cy + (envH / 4));
+
+    // Draw open flap (upper triangular part) - reduced size
+    int flapHeight = envH / 5; // Уменьшенная высота клапана
+    POINT flap[4];
+    flap[0].x = left;
+    flap[0].y = top;
+    flap[1].x = cx;
+    flap[1].y = top - flapHeight; // Клапан открыт вверх, но меньше
+    flap[2].x = right;
+    flap[2].y = top;
+    flap[3].x = left;
+    flap[3].y = top;
+
+    Polygon(hdc, flap, 3);
+
+    // Draw fold lines on flap
+    MoveToEx(hdc, left, top, NULL);
+    LineTo(hdc, cx, top - flapHeight);
+    LineTo(hdc, right, top);
+
+    // Draw heart seal on flap
+    SelectObject(hdc, oldPen);
+    SelectObject(hdc, oldBrush);
+    DeleteObject(hBorderPen);
+    DeleteObject(hEnvBrush);
+
+    HBRUSH hHeartBrush = CreateSolidBrush(heartColor);
+    HPEN hHeartPen = CreatePen(PS_SOLID, 1, heartColor);
+    SelectObject(hdc, hHeartBrush);
+    SelectObject(hdc, hHeartPen);
+
+    // Heart on flap - adjusted position
+    double size = (double)min(envW, envH) / 10.0; // Немного меньше сердце
+    int hCx = cx;
+    int hCy = top - flapHeight / 2; // Центр клапана
+
+    POINT pts[7];
+    pts[0].x = hCx;                     pts[0].y = hCy - (int)(size * 0.5);
+    pts[1].x = hCx + (int)(size * 1.2); pts[1].y = hCy - (int)(size * 1.5);
+    pts[2].x = hCx + (int)(size * 2.2); pts[2].y = hCy + (int)(size * 0.5);
+    pts[3].x = hCx;                     pts[3].y = hCy + (int)(size * 1.5);
+    pts[4].x = hCx - (int)(size * 2.2); pts[4].y = hCy + (int)(size * 0.5);
+    pts[5].x = hCx - (int)(size * 1.2); pts[5].y = hCy - (int)(size * 1.5);
+    pts[6].x = hCx;                     pts[6].y = hCy - (int)(size * 0.5);
+
+    BeginPath(hdc);
+    PolyBezier(hdc, pts, 7);
+    EndPath(hdc);
+    FillPath(hdc);
+
+    // Cleanup
+    SelectObject(hdc, oldPen);
+    SelectObject(hdc, oldBrush);
+    DeleteObject(hHeartBrush);
+    DeleteObject(hHeartPen);
+}
+
+void DrawLetter(HWND hWnd, HDC hdc) {
+    if (!hWnd) return;
+
+    // Get window dimensions
+    RECT rect;
+    GetClientRect(hWnd, &rect);
+    int width = rect.right - rect.left;
+    int height = rect.bottom - rect.top;
+    int cx = width / 2;
+    int cy = height / 2;
+
+    // Calculate letter dimensions (slightly smaller than envelope and peeking out)
+    int letterW = width - 100;
+    int letterH = height - 140;
+    int left = cx - letterW / 2;
+    int top = cy - letterH / 2 - 20; // Немного выглядывает
+    int right = cx + letterW / 2;
+    int bottom = cy + letterH / 2 - 20;
+
+    // Colors
+    COLORREF paperColor = RGB(255, 255, 250);
+    COLORREF textColor = RGB(100, 50, 150);
+    COLORREF heartColor = RGB(255, 0, 80);
+
+    // Draw letter paper
+    HBRUSH hPaperBrush = CreateSolidBrush(paperColor);
+    HPEN hPaperPen = CreatePen(PS_SOLID, 2, RGB(200, 200, 200));
+    HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, hPaperBrush);
+    HPEN oldPen = (HPEN)SelectObject(hdc, hPaperPen);
+
+    Rectangle(hdc, left, top, right, bottom);
+
+    SelectObject(hdc, oldPen);
+    DeleteObject(hPaperPen);
+
+    // Draw text lines
+    HPEN hTextPen = CreatePen(PS_SOLID, 2, textColor);
+    SelectObject(hdc, hTextPen);
+
+    int lineSpacing = 25;
+    int lineLeft = left + 30;
+    int lineRight = right - 30;
+    int startY = top + 50;
+
+    for (int i = 0; i < 5; i++) {
+        int y = startY + i * lineSpacing;
+        MoveToEx(hdc, lineLeft, y, NULL);
+        LineTo(hdc, lineRight - (i * 10), y); // Varying line lengths
+    }
+
+    SelectObject(hdc, oldPen);
+    DeleteObject(hTextPen);
+
+    // Draw small decorative hearts
+    HBRUSH hHeartBrush = CreateSolidBrush(heartColor);
+    HPEN hHeartPen = CreatePen(PS_SOLID, 1, heartColor);
+    SelectObject(hdc, hHeartBrush);
+    SelectObject(hdc, hHeartPen);
+
+    // Draw 3 small hearts
+    for (int i = 0; i < 3; i++) {
+        double size = 8.0;
+        int hCx = left + 40 + i * 40;
+        int hCy = bottom - 40;
+
+        POINT pts[7];
+        pts[0].x = hCx;                     pts[0].y = hCy - (int)(size * 0.5);
+        pts[1].x = hCx + (int)(size * 1.2); pts[1].y = hCy - (int)(size * 1.5);
+        pts[2].x = hCx + (int)(size * 2.2); pts[2].y = hCy + (int)(size * 0.5);
+        pts[3].x = hCx;                     pts[3].y = hCy + (int)(size * 1.5);
+        pts[4].x = hCx - (int)(size * 2.2); pts[4].y = hCy + (int)(size * 0.5);
+        pts[5].x = hCx - (int)(size * 1.2); pts[5].y = hCy - (int)(size * 1.5);
+        pts[6].x = hCx;                     pts[6].y = hCy - (int)(size * 0.5);
+
+        BeginPath(hdc);
+        PolyBezier(hdc, pts, 7);
+        EndPath(hdc);
+        FillPath(hdc);
+    }
+
+    // Cleanup
+    SelectObject(hdc, oldBrush);
+    SelectObject(hdc, oldPen);
+    DeleteObject(hPaperBrush);
+    DeleteObject(hHeartBrush);
+    DeleteObject(hHeartPen);
+}
