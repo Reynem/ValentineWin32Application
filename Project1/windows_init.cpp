@@ -1,6 +1,7 @@
 #include "windows_init.h"
 #include "Project1.h"
 #include "utils_windows.h"
+#include <cmath>
 
 struct AnimationState {
     HWND hWnd;
@@ -78,6 +79,94 @@ void MoveAllWindowsParallel(HWND* hWnds, WindowRect* targets, int count, int ste
     delete[] states;
 }
 
+void SpiralToCenter(
+    HWND* hWnds,
+    int count,
+    int centerX,
+    int centerY,
+    int steps = 240,
+    int delayMs = 10
+)
+{
+    struct SpiralState {
+        HWND hWnd;
+        double angle;
+        double radius;
+        int width;
+        int height;
+    };
+
+    SpiralState* states = new SpiralState[count];
+
+    // Initialization
+    for (int i = 0; i < count; i++)
+    {
+        RECT rc;
+        GetWindowRect(hWnds[i], &rc);
+
+        int w = rc.right - rc.left;
+        int h = rc.bottom - rc.top;
+
+        double cx = rc.left + w / 2.0;
+        double cy = rc.top + h / 2.0;
+
+        double dx = cx - centerX;
+        double dy = cy - centerY;
+
+        states[i].hWnd = hWnds[i];
+        states[i].width = w;
+        states[i].height = h;
+        states[i].radius = sqrt(dx * dx + dy * dy);
+        states[i].angle = atan2(dy, dx); // current angle
+    }
+
+    // 2. Animation
+    for (int s = 0; s < steps; s++)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            // Reducing radius
+            states[i].radius *= 0.98;
+
+            // Rotating по часовой стрелке
+            states[i].angle += 0.05;
+
+            double x = centerX +
+                states[i].radius * cos(states[i].angle) -
+                states[i].width / 2.0;
+
+            double y = centerY +
+                states[i].radius * sin(states[i].angle) -
+                states[i].height / 2.0;
+
+            MoveWindow(
+                states[i].hWnd,
+                (int)x,
+                (int)y,
+                states[i].width,
+                states[i].height,
+                TRUE
+            );
+        }
+
+        Sleep(delayMs);
+    }
+
+    // 3. Final positioning in center
+    for (int i = 0; i < count; i++)
+    {
+        MoveWindow(
+            states[i].hWnd,
+            centerX - states[i].width / 2,
+            centerY - states[i].height / 2,
+            states[i].width,
+            states[i].height,
+            TRUE
+        );
+    }
+
+    delete[] states;
+}
 
 enum {
 	NUM_ROWS = 3,
@@ -166,11 +255,38 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     for (int i = 0; i < 6; i++) {
         RECT rc;
         GetWindowRect(hWnd[i], &rc);
-        newPositions[i].x = rc.left + 100;
+        newPositions[i].x = rc.left + 50;
         newPositions[i].y = rc.top + 50;
     }
 
-    MoveAllWindowsParallel(hWnd, newPositions, 6, 50, 10);
+    const int halfNumWindows = (int)numWindows / 2;
+
+    for (int i = 0; i < numWindows; i++) {
+        RECT rc;
+        GetWindowRect(hWnd[i], &rc);
+        if (i % 2 == 0) {
+            newPositions[i].x = rc.left - 250;
+            newPositions[i].y = rc.top;
+        }
+        else {
+            newPositions[i].x = rc.left + 250;
+            newPositions[i].y = rc.top;
+        }
+    }
+
+    MoveAllWindowsParallel(hWnd, newPositions, numWindows, 30, 5);
+
+    int centerX = screenWidth / 2;
+    int centerY = screenHeight / 2;
+
+    SpiralToCenter(
+        hWnd,
+        numWindows,
+        centerX,
+        centerY,
+        240,     // steps
+        25       // duration
+    );
 
     return TRUE;
 }
