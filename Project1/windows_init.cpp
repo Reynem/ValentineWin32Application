@@ -295,5 +295,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         25       // duration
     );
 
+
+
+
+	Sleep(3000); // Wait a bit before closing
+	ExitProcess(0);
+
     return TRUE;
 }
