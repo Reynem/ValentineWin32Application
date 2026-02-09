@@ -329,7 +329,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     RECT rect;
     GetWindowRect(hWnd[numWindows - 1], &rect);
 
-    MoveWindowSmooth(hWnd[numWindows - 1], rect.left, rect.top + 250);
+    MoveWindowSmooth(hWnd[numWindows - 1], rect.left, rect.top + 250, 30);
 
     return TRUE;
 }

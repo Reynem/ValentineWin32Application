@@ -276,10 +276,10 @@ void DrawLetter(HWND hWnd, HDC hdc, const wchar_t* myLoveWishings) {
     int cy = height / 2;
 
     // Calculate letter dimensions (slightly smaller than envelope and peeking out)
-    int letterW = width - 50;
+    int letterW = width;
     int letterH = height;
     int left = cx - letterW / 2;
-    int top = cy - letterH / 2 - 20; // Немного выглядывает
+    int top = cy - letterH / 2 + 10; // Немного выглядывает
     int right = cx + letterW / 2;
     int bottom = cy + letterH / 2 - 20;
 
@@ -303,7 +303,7 @@ void DrawLetter(HWND hWnd, HDC hdc, const wchar_t* myLoveWishings) {
     // Setup text drawing
     RECT textRect;
     textRect.left = left + 20;
-    textRect.top = top + 20;
+    textRect.top = top + 5;
     textRect.right = right - 20;
     textRect.bottom = bottom - 20;
 
@@ -326,7 +326,7 @@ void DrawLetter(HWND hWnd, HDC hdc, const wchar_t* myLoveWishings) {
         CLIP_DEFAULT_PRECIS,       // ClipPrecision
         ANTIALIASED_QUALITY,       // Quality (улучшенное качество)
         DEFAULT_PITCH | FF_SWISS,  // PitchAndFamily
-        L"Arial"                   // Font name
+        L"Georgia"                   // Font name
     );
 
     HFONT oldFont = (HFONT)SelectObject(hdc, hFont);
