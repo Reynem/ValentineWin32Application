@@ -331,5 +331,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
     MoveWindowSmooth(hWnd[numWindows - 1], rect.left, rect.top + 250, 30);
 
+    Sleep(10000);
+    ExitProcess(0);
+
     return TRUE;
 }
