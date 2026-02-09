@@ -264,7 +264,7 @@ void DrawOpenEnvelope(HWND hWnd, HDC hdc) {
     DeleteObject(hHeartPen);
 }
 
-void DrawLetter(HWND hWnd, HDC hdc) {
+void DrawLetter(HWND hWnd, HDC hdc, const wchar_t* myLoveWishings) {
     if (!hWnd) return;
 
     // Get window dimensions
@@ -276,78 +276,68 @@ void DrawLetter(HWND hWnd, HDC hdc) {
     int cy = height / 2;
 
     // Calculate letter dimensions (slightly smaller than envelope and peeking out)
-    int letterW = width - 100;
-    int letterH = height - 140;
+    int letterW = width - 50;
+    int letterH = height;
     int left = cx - letterW / 2;
     int top = cy - letterH / 2 - 20; // Немного выглядывает
     int right = cx + letterW / 2;
     int bottom = cy + letterH / 2 - 20;
 
     // Colors
-    COLORREF paperColor = RGB(255, 255, 250);
+    COLORREF paperColor = RGB(255, 220, 230); // Светло-розовый
     COLORREF textColor = RGB(100, 50, 150);
-    COLORREF heartColor = RGB(255, 0, 80);
 
     // Draw letter paper
     HBRUSH hPaperBrush = CreateSolidBrush(paperColor);
-    HPEN hPaperPen = CreatePen(PS_SOLID, 2, RGB(200, 200, 200));
+    HPEN hPaperPen = CreatePen(PS_SOLID, 2, RGB(255, 180, 200));
     HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, hPaperBrush);
     HPEN oldPen = (HPEN)SelectObject(hdc, hPaperPen);
 
     Rectangle(hdc, left, top, right, bottom);
 
     SelectObject(hdc, oldPen);
+    SelectObject(hdc, oldBrush);
     DeleteObject(hPaperPen);
+    DeleteObject(hPaperBrush);
 
-    // Draw text lines
-    HPEN hTextPen = CreatePen(PS_SOLID, 2, textColor);
-    SelectObject(hdc, hTextPen);
+    // Setup text drawing
+    RECT textRect;
+    textRect.left = left + 20;
+    textRect.top = top + 20;
+    textRect.right = right - 20;
+    textRect.bottom = bottom - 20;
 
-    int lineSpacing = 25;
-    int lineLeft = left + 30;
-    int lineRight = right - 30;
-    int startY = top + 50;
+    // Set text properties
+    SetTextColor(hdc, textColor);
+    SetBkMode(hdc, TRANSPARENT);
 
-    for (int i = 0; i < 5; i++) {
-        int y = startY + i * lineSpacing;
-        MoveToEx(hdc, lineLeft, y, NULL);
-        LineTo(hdc, lineRight - (i * 10), y); // Varying line lengths
-    }
+    // Create and select font
+    HFONT hFont = CreateFont(
+        18,                        // Height
+        0,                         // Width
+        0,                         // Escapement
+        0,                         // Orientation
+        FW_NORMAL,                 // Weight
+        FALSE,                     // Italic
+        FALSE,                     // Underline
+        FALSE,                     // StrikeOut
+        DEFAULT_CHARSET,           // CharSet
+        OUT_DEFAULT_PRECIS,        // OutPrecision
+        CLIP_DEFAULT_PRECIS,       // ClipPrecision
+        ANTIALIASED_QUALITY,       // Quality (улучшенное качество)
+        DEFAULT_PITCH | FF_SWISS,  // PitchAndFamily
+        L"Arial"                   // Font name
+    );
 
-    SelectObject(hdc, oldPen);
-    DeleteObject(hTextPen);
+    HFONT oldFont = (HFONT)SelectObject(hdc, hFont);
 
-    // Draw small decorative hearts
-    HBRUSH hHeartBrush = CreateSolidBrush(heartColor);
-    HPEN hHeartPen = CreatePen(PS_SOLID, 1, heartColor);
-    SelectObject(hdc, hHeartBrush);
-    SelectObject(hdc, hHeartPen);
-
-    // Draw 3 small hearts
-    for (int i = 0; i < 3; i++) {
-        double size = 8.0;
-        int hCx = left + 40 + i * 40;
-        int hCy = bottom - 40;
-
-        POINT pts[7];
-        pts[0].x = hCx;                     pts[0].y = hCy - (int)(size * 0.5);
-        pts[1].x = hCx + (int)(size * 1.2); pts[1].y = hCy - (int)(size * 1.5);
-        pts[2].x = hCx + (int)(size * 2.2); pts[2].y = hCy + (int)(size * 0.5);
-        pts[3].x = hCx;                     pts[3].y = hCy + (int)(size * 1.5);
-        pts[4].x = hCx - (int)(size * 2.2); pts[4].y = hCy + (int)(size * 0.5);
-        pts[5].x = hCx - (int)(size * 1.2); pts[5].y = hCy - (int)(size * 1.5);
-        pts[6].x = hCx;                     pts[6].y = hCy - (int)(size * 0.5);
-
-        BeginPath(hdc);
-        PolyBezier(hdc, pts, 7);
-        EndPath(hdc);
-        FillPath(hdc);
+    // Draw the text from myLoveWishings variable
+    if (myLoveWishings != NULL) {
+        DrawText(hdc, myLoveWishings, -1, &textRect,
+            DT_LEFT | DT_WORDBREAK | DT_EDITCONTROL | DT_NOPREFIX);
     }
 
     // Cleanup
-    SelectObject(hdc, oldBrush);
-    SelectObject(hdc, oldPen);
-    DeleteObject(hPaperBrush);
-    DeleteObject(hHeartBrush);
-    DeleteObject(hHeartPen);
+    SelectObject(hdc, oldFont);
+    DeleteObject(hFont);
 }

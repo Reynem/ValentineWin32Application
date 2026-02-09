@@ -296,7 +296,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
     Sleep(2000);
 
-	for (int i = 0; i < numWindows - 1; i++) {
+	for (int i = 0; i < numWindows - 2; i++) {
         if (hWnd[i]) {
 			DestroyWindow(hWnd[i]);
 			hWnd[i] = nullptr;
@@ -320,10 +320,16 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
     UpdateWindow(hWnd[numWindows - 1]);
 
+	SetPropW(hWnd[numWindows - 2], L"WindowType", (HANDLE)3);
+
+	InvalidateRect(hWnd[numWindows - 2], NULL, TRUE); // Force redraw to show the love letter
+
+	UpdateWindow(hWnd[numWindows - 2]);
+
     RECT rect;
     GetWindowRect(hWnd[numWindows - 1], &rect);
 
-    MoveWindowSmooth(hWnd[numWindows - 1], rect.left, rect.top + 50);
+    MoveWindowSmooth(hWnd[numWindows - 1], rect.left, rect.top + 250);
 
     return TRUE;
 }

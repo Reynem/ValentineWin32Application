@@ -5,7 +5,7 @@ void MoveWindowSmooth(HWND hWnd, int targetX, int targetY, int steps = 50, int d
 void DrawHeart(HWND hWnd, HDC hdc, COLORREF color);
 void DrawLoveLetter(HWND hWnd, HDC hdc);
 void DrawOpenEnvelope(HWND hWnd, HDC hdc);
-void DrawLetter(HWND hWnd, HDC hdc);
+void DrawLetter(HWND hWnd, HDC hdc, const wchar_t* myLoveWishings);
 
 extern struct WindowRect {
     int x;
