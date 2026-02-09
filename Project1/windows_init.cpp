@@ -176,8 +176,6 @@ void SpiralToCenter(
 }
 
 enum {
-	NUM_ROWS = 3,
-	NUM_COLS = 2,
 	PINK_C = RGB(255, 192, 203),
 	RED_C = RGB(255, 0, 0),
 	CYAN_C = RGB(0, 255, 255),
@@ -186,7 +184,7 @@ enum {
 	YELLOW_C = RGB(255, 255, 0)
 };
 
-COLORREF heartColors[NUM_ROWS * NUM_COLS]{
+COLORREF heartColors[NUM_ROWSS * NUM_COLSS]{
     PINK_C,
     RED_C,
     CYAN_C,
@@ -201,9 +199,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
 
-    const int rows = 3;
-    const int cols = 2;
-    const int numWindows = rows * cols;
+    const int rows = NUM_ROWSS;
+    const int cols = NUM_COLSS;
+    const int numWindows = NUM_WINDOWS;
 
     WindowRect pack_of_values[numWindows];
 
@@ -253,6 +251,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 		SetLayeredWindowAttributes(hWnd[i], transparentColor, 0, LWA_COLORKEY);
 		SetPropW(hWnd[i], L"HeartColor", (HANDLE)heartColors[i]);
+		SetPropW(hWnd[i], L"WindowType", (HANDLE)0);
 
         ShowWindow(hWnd[i], nCmdShow);
         UpdateWindow(hWnd[i]);
@@ -295,11 +294,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
         25       // duration
     );
 
+    Sleep(2000);
 
+	for (int i = 0; i < numWindows - 1; i++) {
+        if (hWnd[i]) {
+			DestroyWindow(hWnd[i]);
+			hWnd[i] = nullptr;
+        }
+    }
 
+	SetPropW(hWnd[numWindows - 1], L"WindowType", (HANDLE)1);
 
-	Sleep(3000); // Wait a bit before closing
-	ExitProcess(0);
+	InvalidateRect(hWnd[numWindows - 1], NULL, TRUE); // Force redraw to show the love letter
+
+	UpdateWindow(hWnd[numWindows - 1]);
 
     return TRUE;
 }

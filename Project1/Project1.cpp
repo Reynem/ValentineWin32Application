@@ -12,6 +12,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+SHORT g_numWindows = NUM_WINDOWS;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -132,17 +133,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             
+			unsigned char type = (unsigned char)(DWORD_PTR)GetPropW(hWnd, L"WindowType");
 			COLORREF color = (COLORREF)GetPropW(hWnd, L"HeartColor");
 
 			if (color == NULL) color = RGB(255, 0, 0);
 
-			DrawHeart(hWnd, hdc, color);
+			if (type == 1) DrawLoveLetter(hWnd, hdc);
+			else if (type == 0) DrawHeart(hWnd, hdc, color);
 
             EndPaint(hWnd, &ps);
         }
         break;
     case WM_DESTROY:
-        PostQuitMessage(0);
+		g_numWindows--;
+
+		if (g_numWindows <= 0)
+            PostQuitMessage(0);
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
